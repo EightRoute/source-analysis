@@ -1,13 +1,13 @@
-package com.webmvc.util.locks;
+package util.locks;
 
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
+import sun.misc.Unsafe;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-
-import sun.misc.Unsafe;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 
 
 public abstract class AbstractQueuedSynchronizer

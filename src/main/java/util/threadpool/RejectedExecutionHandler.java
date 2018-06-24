@@ -1,4 +1,4 @@
-package com.webmvc.util.threadpool;
+package util.threadpool;
 
 
 /**

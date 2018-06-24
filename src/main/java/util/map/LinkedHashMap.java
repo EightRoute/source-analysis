@@ -1,17 +1,8 @@
-package com.webmvc.util.map;
+package util.map;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -47,7 +38,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V>
     transient LinkedHashMap.Entry<K,V> tail;
 
     /**
-     * true表示按照访问顺序迭代，false时表示按照插入顺序 
+     * true表示按照访问顺序迭代，false时表示按照插入顺序
      * 要用LinkedHashMap实现LRU算法时，就需要调用该构造方法并将accessOrder置为true
      */
     final boolean accessOrder;
@@ -148,7 +139,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V>
         }
     }
 
-    void afterNodeInsertion(boolean evict) { 
+    void afterNodeInsertion(boolean evict) {
         LinkedHashMap.Entry<K,V> first;
         // removeEldestEntry(first) 目前为false
         if (evict && (first = head) != null && removeEldestEntry(first)) {
@@ -158,7 +149,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V>
     }
 
     //如果accessOrder为true 将最后被操作的节点移到链表最后
-    void afterNodeAccess(Node<K,V> e) { 
+    void afterNodeAccess(Node<K,V> e) {
         LinkedHashMap.Entry<K,V> last;
         if (accessOrder && (last = tail) != e) {
             LinkedHashMap.Entry<K,V> p =
@@ -197,7 +188,7 @@ public class LinkedHashMap<K, V> extends HashMap<K, V>
 
     /**
      * @param  initialCapacity 初始化容量
-     * @param  loadFactor    负载因子  
+     * @param  loadFactor    负载因子
      */
     public LinkedHashMap(int initialCapacity, float loadFactor) {
         super(initialCapacity, loadFactor);

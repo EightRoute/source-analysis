@@ -1,11 +1,6 @@
-package com.webmvc.util.map;
+package util.map;
 
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author sgz
@@ -136,7 +131,7 @@ public abstract class AbstractMap<K, V> implements Map<K, V>{
 	/*PECS*/
 	@Override
 	public void putAll(Map<? extends K, ? extends V> m) {
-		for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
+		for (Entry<? extends K, ? extends V> e : m.entrySet()) {
 			put(e.getKey(), e.getValue());
 		}
 	}

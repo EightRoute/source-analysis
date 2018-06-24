@@ -1,4 +1,4 @@
-package com.webmvc.util.locks;
+package util.locks;
 
 
 import sun.misc.Unsafe;
@@ -112,7 +112,7 @@ public class LockSupport {
     private static final long SECONDARY;
     static {
         try {
-            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            UNSAFE = Unsafe.getUnsafe();
             Class<?> tk = Thread.class;
             parkBlockerOffset = UNSAFE.objectFieldOffset
                 (tk.getDeclaredField("parkBlocker"));

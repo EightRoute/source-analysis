@@ -1,4 +1,4 @@
-package com.webmvc.util.locks;
+package util.locks;
 
 /**
  * 只有一个变量exclusiveOwnerThread表示占用该锁的线程

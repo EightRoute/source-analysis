@@ -1,24 +1,10 @@
-package com.webmvc.util.map;
+package util.map;
 
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.AbstractCollection;
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
-
 
 
 /**
@@ -55,19 +41,19 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 	//为了避免进行扩容、树形化选择的冲突，这个值不能小于 4 * TREEIFY_THRESHOLD
 	static final int MIN_TREEIFY_CAPACITY = 64;
 	
-	static class Node<K, V> implements Map.Entry<K, V> {
+	static class Node<K, V> implements Entry<K, V> {
 		final int hash;
 		final K key;
 		V value;
 		Node<K, V> next;
-		
+
 		Node(int hash, K key, V value, Node<K,V> next) {
 			this.hash = hash;
 			this.key = key;
 			this.value = value;
 			this.next = next;
 		}
-		
+
 		@Override
 		public final K getKey() {
 			return key;
@@ -77,12 +63,12 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		public final V getValue() {
 			return value;
 		}
-		
+
 		@Override
 		public final String toString() {
 			return key + " = " + value;
 		}
-		
+
 		@Override
 		public final int hashCode() {
 			/* ^运算  01 -> 1, 00 -> 0, 11 -> 0 */
@@ -95,22 +81,22 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 			value = newValue;
 			return oldValue;
 		}
-		
+
 		@Override
 		public final boolean equals(Object o) {
 			if (o == this)
                 return true;
             if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
+                Entry<?,?> e = (Entry<?,?>)o;
                 if (Objects.equals(key, e.getKey()) &&
                     Objects.equals(value, e.getValue()))
                     return true;
             }
             return false;
 		}
-		
+
 	}
-	
+
 	static final int hash(Object key) {
 		int h;
 		/*无符号的右移>>>,按照二进制把数字右移指定数位，高位直接补零，低位移除*/
@@ -130,49 +116,49 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         n |= n >>> 16;
         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 	}
-	
+
 	transient Node<K,V>[] table;
-	
-	transient Set<Map.Entry<K, V>> entrySet;
-	
+
+	transient Set<Entry<K, V>> entrySet;
+
 	transient int size;
-	
+
 	transient int modCount;
 	/*阈值，等于加载因子*容量，当实际大小超过阈值则进行扩容*/
 	int threshold;
 	/*扩容参数*/
 	final float loadFactor;
-	
+
 	public HashMap(int initialCapacity, float loadFactor) {
 		if (initialCapacity < 0) {
 			throw new IllegalArgumentException("初始化容量不能小于0,当前容量为:" + initialCapacity);
 		}
-		
+
 		if (initialCapacity > MAXIMUM_CAPACITY) {
 			initialCapacity = MAXIMUM_CAPACITY;
 		}
-		
+
 		if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
 			throw new IllegalArgumentException("扩容参数错误,当前为:" + loadFactor);
 		}
-		
+
 		this.loadFactor = loadFactor;
 		this.threshold = tableSizeFor(initialCapacity);
 	}
-	
+
 	public HashMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
-	
+
 	public HashMap() {
 		this.loadFactor = DEFAULT_LOAD_FACTOR;
 	}
-	
+
 	public HashMap(Map<? extends K, ? extends V> m) {
 		this.loadFactor = DEFAULT_LOAD_FACTOR;
 		putMapEntries(m, false);
 	}
-	
+
 	/**
 	 * 插入一个map
 	 */
@@ -189,14 +175,14 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 				//大于阈值 扩容
 				resize();
 			}
-			for (Map.Entry<? extends K, ? extends V> e : m.entrySet()) {
+			for (Entry<? extends K, ? extends V> e : m.entrySet()) {
 				K key = e.getKey();
 				V value = e.getValue();
 				putVal(hash(key), key, value, false, evict);
 			}
 		}
 	}
-	
+
 	/**
 	 * 初始分配或者容量翻倍
 	 * @return 新的table
@@ -204,7 +190,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 	final Node<K, V>[] resize() {
 		Node<K, V>[] oldTab = table;
 		//老的容量
-		int oldCap = (oldTab == null) ? 0 : oldTab.length; 
+		int oldCap = (oldTab == null) ? 0 : oldTab.length;
 		//老阈值
 		int oldThr = threshold;
 		int newCap, newThr = 0;
@@ -227,17 +213,17 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 			//阈值 = 容量 * 负载因子
 			newThr = (int) (DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
 		}
-		
+
 		if (newThr == 0) {
 			float ft = (float)newCap * loadFactor;
-			newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ? 
+			newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
 					(int)ft : Integer.MAX_VALUE);
 		}
 		threshold = newThr;
-		
+
 		@SuppressWarnings("unchecked")
 		//创建新的表
-		Node<K, V>[] newTab = (Node<K,V>[])new Node[newCap]; 
+		Node<K, V>[] newTab = (Node<K,V>[])new Node[newCap];
 		table = newTab;
 		if (oldTab != null) {
 			for (int j = 0; j < oldCap; ++j) {
@@ -260,7 +246,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 							//遍历链表
 							next = e.next;
 							//当(e.hash & oldCap) == 0 痛的位置不需要改变
-							// oldcap 00010000 oldcap-1 00001111  newcap-1 00011111  
+							// oldcap 00010000 oldcap-1 00001111  newcap-1 00011111
 							// hash   11101111          11101111           11101111
 							if ((e.hash & oldCap) == 0) {
 								if (loTail == null) {
@@ -282,7 +268,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 							loTail.next = null;
 							newTab[j] = loHead;
 						}
-						//假设hash为48 oldcap为16 
+						//假设hash为48 oldcap为16
 						//110000 110000
 						//001111 011111 老的位置为0 新的为16
 						if (hiTail != null) {
@@ -293,12 +279,12 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 				}
 			}
 		}
-		
+
 		return newTab;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param hash 用来确定数组下标
 	 * @param key 键
 	 * @param value 值
@@ -323,7 +309,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		} else {
 			Node<K, V> e; K k;
 			//如果和第一个元素的key就相等
-			if (p.hash == hash 
+			if (p.hash == hash
 				&& ((k = p.key) == key || (key != null && key.equals(k)))) {
 				e = p;
 			} else if (p instanceof TreeNode) {
@@ -340,12 +326,12 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 						}
 					}
 					//存在相同的key时
-					if (e.hash == hash 
+					if (e.hash == hash
 							&& ((k = e.key) == key || (key != null && key.equals(k)))) {
 						break;
 					}
 					p = e;
-				}		
+				}
 			}
 			if (e != null) {
 				V oldValue = e.value;
@@ -364,7 +350,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		afterNodeInsertion(evict);
 		return null;
 	}
-	
+
 	void reinitialize() {
         table = null;
         entrySet = null;
@@ -374,16 +360,16 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         threshold = 0;
         size = 0;
     }
-	
+
 	void afterNodeAccess(Node<K, V> p) {}
 	void afterNodeInsertion(boolean evict) {}
 	void afterNodeRemoval(Node<K, V> p) {}
-	
+
 	Node<K, V> newNode(int hash, K key, V value, Node<K, V> next) {
 		return new Node<>(hash, key, value, next);
 	}
-	
-	/*当有一条链条的长度大于TREEIFY_THRESHOLD 
+
+	/*当有一条链条的长度大于TREEIFY_THRESHOLD
 	 * 且桶的长度大于MIN_TREEIFY_CAPACITY时
 	 * 将桶内链表节点 替换成 红黑树节点*/
 	final void treeifyBin(Node<K, V>[] tab, int hash) {
@@ -412,14 +398,14 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 			}
 		}
 	}
-	
+
 	/**
-	 * 将链表节点转换为红黑树节点 
+	 * 将链表节点转换为红黑树节点
 	 */
 	TreeNode<K, V> replacementTreeNode(Node<K, V> p, Node<K, V> next) {
 		return new TreeNode<K, V>(p.hash, p.key, p.value, next);
 	}
-	
+
 	/**
 	 * 一共都多少对key-value
 	 */
@@ -472,12 +458,12 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		return (e = getNode(hash(key), key)) == null ? null : e.value;
 	}
 
-	
+
 	final Node<K, V> getNode(int hash, Object key) {
 		Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
         if ((tab = table) != null && (n = tab.length) > 0 &&
             (first = tab[(n - 1) & hash]) != null) {
-            if (first.hash == hash && 
+            if (first.hash == hash &&
                 ((k = first.key) == key || (key != null && key.equals(k)))) {
                 //如果第一个就相等
             	return first;
@@ -499,7 +485,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         }
         return null;
 	}
-	
+
 	/**
 	 * 插入key-value
 	 */
@@ -517,7 +503,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		return (e = removeNode(hash(key), key, null, false, true)) == null ?
 	            null : e.value;
 	}
-	
+
 	//删除Node
 	final Node<K, V> removeNode(int hash, Object key, Object value,
             boolean matchValue, boolean movable) {
@@ -573,8 +559,8 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 	public void putAll(Map<? extends K, ? extends V> m) {
 		putMapEntries(m, true);
 	}
-	
-	
+
+
 
 	/**
 	 * 清空map
@@ -589,8 +575,8 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 			}
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	@Override
     public Object clone() {
@@ -612,7 +598,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
             (threshold > 0) ? threshold :
             DEFAULT_INITIAL_CAPACITY;
     }
-	
+
 	void internalWriteEntries(ObjectOutputStream s) throws IOException {
         Node<K,V>[] tab;
         if (size > 0 && (tab = table) != null) {
@@ -624,7 +610,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
             }
         }
     }
-	
+
 	/**
 	 * 序列化
 	 */
@@ -648,12 +634,12 @@ public class HashMap<K, V> extends AbstractMap<K, V>
             throw new InvalidObjectException("Illegal load factor: " +
                                              loadFactor);
         }
-        s.readInt();                
-        int mappings = s.readInt(); 
+        s.readInt();
+        int mappings = s.readInt();
         if (mappings < 0) {
             throw new InvalidObjectException("Illegal mappings count: " +
                                              mappings);
-        } else if (mappings > 0) { 
+        } else if (mappings > 0) {
         	// 如果为0使用默认的
             // loadFactor在0.25...4.0之间
             float lf = Math.min(Math.max(0.25f, loadFactor), 4.0f);
@@ -679,7 +665,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
                 putVal(hash(key), key, value, false, false);
             }
         }
-    }    
+    }
 
 	@Override
 	public Set<K> keySet() {
@@ -690,10 +676,10 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		}
 		return ks;
 	}
-	
+
 	//使用EntrySet遍历Map类集合，而不是KeySet，因为KeySet遍历了两遍而EntrySet只遍历了一遍
 	final class KeySet extends AbstractSet<K> {
-		
+
 		@Override
 		public final Iterator<K> iterator() {
 			return new KeyIterator();
@@ -703,22 +689,22 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		public final int size() {
 			return size;
 		}
-		
+
 		@Override
 		public final void clear() {
 			HashMap.this.clear();
 		}
-		
+
 		@Override
 		public final boolean contains(Object o) {
 			return containsKey(o);
 		}
-		
+
 		@Override
 		public final boolean remove(Object key) {
 			return removeNode(hash(key), key, null, false, true) != null;
 		}
-		
+
 		@Override
 		public final void forEach(Consumer<? super K> action) {
 			Node<K, V>[] tab;
@@ -736,15 +722,15 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 	                    throw new ConcurrentModificationException();
 				 }
 			}
-			
+
 		}
-		
+
 		@Override
 		public Spliterator<K> spliterator() {
-			// TODO 
+			// TODO
 			return null;
 		}
-		
+
 	}
 
 	//得到V的集合
@@ -757,7 +743,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		}
 		return vs;
 	}
-	
+
 	final class Values extends AbstractCollection<V> {
 
 		@Override
@@ -769,17 +755,17 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 		public final int size() {
 			return size;
 		}
-		
+
 		@Override
 		public final void clear() {
 			HashMap.this.clear();
 		}
-		
+
 		@Override
 		public final boolean contains(Object o) {
 			return containsValue(o);
 		}
-		
+
 		@Override
 		public final void forEach(Consumer<? super V> action) {
 			Node<K,V>[] tab;
@@ -797,51 +783,51 @@ public class HashMap<K, V> extends AbstractMap<K, V>
                 }
             }
 		}
-		
+
 		@Override
 		public Spliterator<V> spliterator() {
 			//TODO
 			return null;
 		}
-		
+
 	}
 
 	//使用entrySet遍历Map类集合，而不是keySet，因为keySet遍历了两遍而entrySet只遍历了一遍
 	@Override
 	public Set<Entry<K, V>> entrySet() {
-		 Set<Map.Entry<K,V>> es;
+		 Set<Entry<K,V>> es;
 	     return (es = entrySet) == null ? (entrySet = new EntrySet()) : es;
 	}
-	
-	final class EntrySet extends AbstractSet<Map.Entry<K,V>> {
+
+	final class EntrySet extends AbstractSet<Entry<K,V>> {
         public final int size() { return size; }
         public final void clear() { HashMap.this.clear(); }
-        public final Iterator<Map.Entry<K,V>> iterator() {
+        public final Iterator<Entry<K,V>> iterator() {
             return new EntryIterator();
         }
         public final boolean contains(Object o) {
             if (!(o instanceof Map.Entry)) {
                 return false;
             }
-            Map.Entry<?,?> e = (Map.Entry<?,?>) o;
+            Entry<?,?> e = (Entry<?,?>) o;
             Object key = e.getKey();
             Node<K,V> candidate = getNode(hash(key), key);
             return candidate != null && candidate.equals(e);
         }
         public final boolean remove(Object o) {
             if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>) o;
+                Entry<?,?> e = (Entry<?,?>) o;
                 Object key = e.getKey();
                 Object value = e.getValue();
                 return removeNode(hash(key), key, value, true, true) != null;
             }
             return false;
         }
-        public final Spliterator<Map.Entry<K,V>> spliterator() {
+        public final Spliterator<Entry<K,V>> spliterator() {
         	//TODO
             return null;
         }
-        public final void forEach(Consumer<? super Map.Entry<K,V>> action) {
+        public final void forEach(Consumer<? super Entry<K,V>> action) {
             Node<K,V>[] tab;
             if (action == null) {
                 throw new NullPointerException();
@@ -858,14 +844,14 @@ public class HashMap<K, V> extends AbstractMap<K, V>
             }
         }
     }
-	
-	
+
+
 	abstract class HashIterator {
 		Node<K, V> next;
 		Node<K, V> current;
 		int expectedModCount;  // 快速失败
-        int index; 
-        
+        int index;
+
         HashIterator() {
 			expectedModCount = modCount;
 			Node<K, V>[] t = table;
@@ -877,11 +863,11 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 				} while (index < t.length && (next = t[index++]) == null);
 			}
 		}
-        
+
         public final boolean hasNext() {
         	return next != null;
         }
-        
+
         final Node<K, V> nextNode() {
         	Node<K, V>[] t;
         	Node<K, V> e = next;
@@ -896,7 +882,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
             }
             return e;
         }
-        
+
         public final void remove() {
         	Node<K, V> p = current;
         	if (p == null) {
@@ -911,27 +897,27 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         	expectedModCount = modCount;
         }
 	}
-	
+
 	final class KeyIterator extends HashIterator implements Iterator<K>{
 		@Override
 		public K next() {
 			return nextNode().key;
-		}		
+		}
 	}
 	final class ValueIterator extends HashIterator implements Iterator<V> {
 		@Override
 		public V next() {
 			return nextNode().value;
-		}	
+		}
 	}
 	//既可以得到key又可以得到value
-	final class EntryIterator extends HashIterator implements Iterator<Map.Entry<K,V>> {
+	final class EntryIterator extends HashIterator implements Iterator<Entry<K,V>> {
 		@Override
-		public java.util.Map.Entry<K, V> next() {
+		public Entry<K, V> next() {
 			return nextNode();
-		}	
+		}
 	}
-	
+
 	/*
 	 * 并行遍历
 	 * 把多个任务分配到不同核上并行执行，能最大发挥多核的能力
@@ -967,14 +953,14 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         }
         //用于估算还剩下多少个元素需要遍历
         public final long estimateSize() {
-            getFence(); 
+            getFence();
             return (long) est;
         }
     }
-	
+
 	public static final class KeySpliterator<K,V> extends HashMapSpliterator<K,V>
     	implements Spliterator<K> {
-		
+
 		public KeySpliterator(HashMap<K,V> m, int origin, int fence, int est,
                    int expectedModCount) {
 			super(m, origin, fence, est, expectedModCount);
@@ -1015,7 +1001,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 					throw new ConcurrentModificationException();
 			}
 		}
-		
+
 		//
 		public boolean tryAdvance(Consumer<? super K> action) {
 			int hi;
@@ -1044,10 +1030,10 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 					Spliterator.DISTINCT;
 		}
 	}
-    
+
     static final class ValueSpliterator<K,V> extends HashMapSpliterator<K,V>
     	implements Spliterator<V> {
-    	
+
     	ValueSpliterator(HashMap<K,V> m, int origin, int fence, int est,
                      int expectedModCount) {
     		super(m, origin, fence, est, expectedModCount);
@@ -1117,7 +1103,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
     }
 
     static final class EntrySpliterator<K,V> extends HashMapSpliterator<K,V>
-    	implements Spliterator<Map.Entry<K,V>> {
+    	implements Spliterator<Entry<K,V>> {
     	EntrySpliterator(HashMap<K,V> m, int origin, int fence, int est,
                      	int expectedModCount) {
     		super(m, origin, fence, est, expectedModCount);
@@ -1130,7 +1116,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
                                       expectedModCount);
     	}
 
-    	public void forEachRemaining(Consumer<? super Map.Entry<K,V>> action) {
+    	public void forEachRemaining(Consumer<? super Entry<K,V>> action) {
     		int i, hi, mc;
     		if (action == null)
     			throw new NullPointerException();
@@ -1159,7 +1145,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
     		}
     	}
     	//顺序处理每个元素
-    	public boolean tryAdvance(Consumer<? super Map.Entry<K,V>> action) {
+    	public boolean tryAdvance(Consumer<? super Entry<K,V>> action) {
     		int hi;
     		if (action == null)
     			throw new NullPointerException();

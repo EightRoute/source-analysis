@@ -1,4 +1,4 @@
-package com.webmvc.util.set;
+package util.set;
 
 import java.io.Serializable;
 import java.util.Collection;

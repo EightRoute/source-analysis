@@ -1,4 +1,4 @@
-package com.webmvc.util.map;
+package util.map;
 
 import java.io.ObjectStreamField;
 import java.util.Random;

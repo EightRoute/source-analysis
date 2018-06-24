@@ -1,16 +1,11 @@
-package com.webmvc.util.threadpool;
+package util.threadpool;
 
+import java.lang.ref.WeakReference;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.AbstractQueue;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.lang.ref.WeakReference;
-import java.util.Spliterators;
-import java.util.Spliterator;
 
 /**
  * 1、基于数组的先进先出队列

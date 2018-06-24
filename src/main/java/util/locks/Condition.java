@@ -1,4 +1,4 @@
-package com.webmvc.util.locks;
+package util.locks;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
