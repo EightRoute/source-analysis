@@ -46,6 +46,12 @@ import static com.google.common.util.concurrent.Uninterruptibles.getUninterrupti
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 
+ /**
+  * 有两种方法加载缓存，分别为call和load，
+  * call和多线程没有关联，call最终还是和load走一样的流程，
+  * load是初始化就指定好啦，而call是在get的时候在指定加载
+  */
+
 @GwtCompatible(emulated = true)
 class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
@@ -170,8 +176,7 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
   final EntryFactory entryFactory;
 
   /**
-   * Accumulates global cache statistics. Note that there are also per-segments stats counters which
-   * must be aggregated to obtain a global stats view.
+   * 记录操作记录
    */
   final StatsCounter globalStatsCounter;
 
@@ -179,7 +184,7 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
   final @Nullable CacheLoader<? super K, V> defaultLoader;
 
   /**
-   * Creates a new, empty map with the specified strategy, initial capacity and concurrency level.
+   * 创建一个新的LocalCache，从builder获取参数
    */
   LocalCache(
       CacheBuilder<? super K, ? super V> builder, @Nullable CacheLoader<? super K, V> loader) {
@@ -3891,6 +3896,10 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
     return segmentFor(hash).get(key, hash);
   }
 
+
+   /**
+    * 获取缓存的核心方法，无论是load还是call最终都要调用本方法
+    */
   V get(K key, CacheLoader<? super K, V> loader) throws ExecutionException {
     int hash = hash(checkNotNull(key));
     return segmentFor(hash).get(key, hash, loader);
@@ -4791,6 +4800,10 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
     }
   }
 
+
+  /**
+   * Cache接口实现类，在get缓存时通过call方法调用，其实还是调用了load
+   */
   static class LocalManualCache<K, V> implements Cache<K, V>, Serializable {
     final LocalCache<K, V> localCache;
 
@@ -4814,6 +4827,7 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
       checkNotNull(valueLoader);
       return localCache.get(
           key,
+          /*还是调用了load方法*/
           new CacheLoader<Object, V>() {
             @Override
             public V load(Object key) throws Exception {
@@ -4887,6 +4901,9 @@ class LocalCache<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> 
     }
   }
 
+  /**
+   * LoadingCache接口的实现类，直接通过load加载
+   */
   static class LocalLoadingCache<K, V> extends LocalManualCache<K, V>
       implements LoadingCache<K, V> {
 
