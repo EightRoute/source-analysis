@@ -582,8 +582,6 @@ public class ReentrantReadWriteLock
         /**
          * 尝试在一段时间内获取锁
          *
-         * @param arg the acquire argument.  
-         * @param nanosTimeout 最长等待多少纳秒
          * @return 规定时间内是否获取到锁
          */
         public boolean tryLock(long timeout, TimeUnit unit)
@@ -738,7 +736,7 @@ public class ReentrantReadWriteLock
     }
 
     /**
-     * @param condition对象
+     * @param condition condition对象
      * @return 等待队列中大概的线程数量
      */
     public int getWaitQueueLength(Condition condition) {

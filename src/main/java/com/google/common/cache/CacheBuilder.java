@@ -130,7 +130,7 @@ public final class CacheBuilder<K, V> {
 
     /**
      * 创建一个CacheBuilder实例，包括强引用的key和value
-     * /
+     */
     public static CacheBuilder<Object, Object> newBuilder() {
         return new CacheBuilder<>();
     }
@@ -161,12 +161,7 @@ public final class CacheBuilder<K, V> {
     }
 
     /**
-     * Sets a custom {@code Equivalence} strategy for comparing keys.
-     *
-     * <p>By default, the cache uses {@link Equivalence#identity} to determine key equality when
-     * {@link #weakKeys} is specified, and {@link Equivalence#equals()} otherwise.
-     *
-     * @return this {@code CacheBuilder} instance (for chaining)
+     * 设置自定义的keyEquivalence
      */
     @GwtIncompatible // To be supported
     CacheBuilder<K, V> keyEquivalence(Equivalence<Object> equivalence) {
@@ -180,18 +175,12 @@ public final class CacheBuilder<K, V> {
     }
 
     /**
-     * Sets a custom {@code Equivalence} strategy for comparing values.
-     *
-     * <p>By default, the cache uses {@link Equivalence#identity} to determine value equality when
-     * {@link #weakValues} or {@link #softValues} is specified, and {@link Equivalence#equals()}
-     * otherwise.
-     *
-     * @return this {@code CacheBuilder} instance (for chaining)
+     * 设置自定义的valueEquivalence
      */
     @GwtIncompatible // To be supported
     CacheBuilder<K, V> valueEquivalence(Equivalence<Object> equivalence) {
-        checkState(
-                valueEquivalence == null, "value equivalence was already set to %s", valueEquivalence);
+        checkState(valueEquivalence == null,
+                "value equivalence was already set to %s", valueEquivalence);
         this.valueEquivalence = checkNotNull(equivalence);
         return this;
     }
@@ -347,7 +336,6 @@ public final class CacheBuilder<K, V> {
     /**
      * 将value设为虚引用
      *
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalStateException 如果已经设置过了
      */
     @GwtIncompatible // java.lang.ref.WeakReference
@@ -358,7 +346,6 @@ public final class CacheBuilder<K, V> {
     /**
      * 将value设为软引用
      *
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalStateException 如果已经设置过了
      */
     @GwtIncompatible // java.lang.ref.SoftReference
@@ -380,7 +367,6 @@ public final class CacheBuilder<K, V> {
      * 在写后多久失效
      *
      * @param duration 多久失效
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalArgumentException 如果{@code duration}是负数
      * @throws IllegalStateException 已经设置过了
      * @throws ArithmeticException durations正负大于292 years
@@ -418,7 +404,6 @@ public final class CacheBuilder<K, V> {
      * 在没操作后多久失效
      *
      * @param duration 多久失效
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalArgumentException 如果{@code duration}是负数
      * @throws IllegalStateException 已经设置过了
      * @throws ArithmeticException durations正负大于292 years
@@ -458,7 +443,6 @@ public final class CacheBuilder<K, V> {
      * 写后多久后刷新
      *
      * @param duration 多久刷新
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalArgumentException 如果{@code duration}是负数
      * @throws IllegalStateException 已经设置过了
      * @throws ArithmeticException durations正负大于292 years
@@ -474,7 +458,6 @@ public final class CacheBuilder<K, V> {
      *
      * @param duration 多久
      * @param unit 单位
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalArgumentException 如果{@code duration}是负数
      * @throws IllegalStateException 已经设置过了
      * @throws ArithmeticException durations正负大于292 years
@@ -515,7 +498,6 @@ public final class CacheBuilder<K, V> {
 
     /**
      * remove时会调用的监听器
-     * @return this {@code CacheBuilder} instance (for chaining)
      * @throws IllegalStateException 已经设置过啦
      */
     @CheckReturnValue
@@ -554,16 +536,7 @@ public final class CacheBuilder<K, V> {
     }
 
     /**
-     * Builds a cache, which either returns an already-loaded value for a given key or atomically
-     * computes or retrieves it using the supplied {@code CacheLoader}. If another thread is currently
-     * loading the value for this key, simply waits for that thread to finish and returns its loaded
-     * value. Note that multiple threads can concurrently load values for distinct keys.
-     *
-     * <p>This method does not alter the state of this {@code CacheBuilder} instance, so it can be
-     * invoked again to create multiple independent caches.
-     *
-     * @param loader the cache loader used to obtain new values
-     * @return a cache having the requested features
+     * 创建一个LoadingCache
      */
     public <K1 extends K, V1 extends V> LoadingCache<K1, V1> build(
             CacheLoader<? super K1, V1> loader) {
@@ -572,16 +545,7 @@ public final class CacheBuilder<K, V> {
     }
 
     /**
-     * Builds a cache which does not automatically load values when keys are requested.
-     *
-     * <p>Consider {@link #build(CacheLoader)} instead, if it is feasible to implement a {@code
-     * CacheLoader}.
-     *
-     * <p>This method does not alter the state of this {@code CacheBuilder} instance, so it can be
-     * invoked again to create multiple independent caches.
-     *
-     * @return a cache having the requested features
-     * @since 11.0
+     * 创建一个Cache
      */
     public <K1 extends K, V1 extends V> Cache<K1, V1> build() {
         checkWeightWithWeigher();

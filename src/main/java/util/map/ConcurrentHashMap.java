@@ -21,7 +21,7 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V> implements Concur
 
 	private static final long serialVersionUID = -7817995361555362741L;
 	/**
-	 * 桶的最大容量, 1 容量必须为2次幂, 2 MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
+	 * 数组的最大的值, 1 容量必须为2次幂, 2 MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8
 	 * 所以为1 << 30
 	 */
 	private static final int MAXIMUM_CAPACITY = 1 << 30;

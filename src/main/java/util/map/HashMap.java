@@ -21,7 +21,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
 	 * 在于h的二进制与操作效率会非常的快，而且空间不浪费
 	 */
 	static final int DEFAULT_INITIAL_CAPACITY = 16;
-	/*最大容量, 1 << 30*/
+	/*数组的最大值,必须为2次幂 1 << 30*/
 	public static final int MAXIMUM_CAPACITY = 1073741824;
 	/*默认扩容参数,代表了table的填充度有多少*/
 	static final float DEFAULT_LOAD_FACTOR = 0.75F;
