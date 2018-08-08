@@ -1,4 +1,4 @@
-package util.locks;
+package java.util.locks;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;

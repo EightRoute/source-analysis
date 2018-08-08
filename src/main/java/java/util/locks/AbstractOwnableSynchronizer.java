@@ -1,4 +1,4 @@
-package util.locks;
+package java.util.locks;
 
 /**
  * 只有一个变量exclusiveOwnerThread表示占用该锁的线程

@@ -1,4 +1,4 @@
-package util.map;
+package java.util.map;
 
 import java.io.*;
 import java.lang.reflect.ParameterizedType;
@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * java8 HashMap源码
  * @author sgz
  */
-public class HashMap<K, V> extends AbstractMap<K, V> 
+public class HashMap<K, V> extends java.util.map.AbstractMap<K, V>
 	implements Map<K, V>, Serializable, Cloneable{
 	
 	private static final long serialVersionUID = 2772224917432192756L;

@@ -1,4 +1,4 @@
-package util.map;
+package java.util.map;
 
 import java.io.ObjectStreamField;
 import java.io.Serializable;
@@ -17,7 +17,7 @@ import java.util.function.*;
  * 	-----无法直接使用Unsafe----
  *  1.8的ConcurrentHashMap不再使用Segment啦
  */
-public class ConcurrentHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> ,Serializable{
+public class ConcurrentHashMap<K, V> extends java.util.map.AbstractMap<K, V> implements ConcurrentMap<K, V> ,Serializable{
 
 	private static final long serialVersionUID = -7817995361555362741L;
 	/**

@@ -1,4 +1,4 @@
-package util.map;
+package java.util.map;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -13,12 +13,12 @@ import java.util.function.Consumer;
  * @date   2018年3月9日 下午1:45:37
  *  linkedHashMap的基本操作还是和HashMap一样，在其上面加了两个属性，也就是为了记录前一个插入的元素和记录后一个插入的元素
  */
-public class LinkedHashMap<K, V> extends HashMap<K, V> 
+public class LinkedHashMap<K, V> extends java.util.map.HashMap<K, V>
 		implements Map<K, V>{
 
 	private static final long serialVersionUID = 8363940143484343740L;
 
-	static class Entry<K, V> extends HashMap.Node<K, V> {
+	static class Entry<K, V> extends java.util.map.HashMap.Node<K, V> {
 		//前一个元素和后一个元素，不一定在同一个桶中
 		Entry<K, V> before, after;
 		Entry(int hash, K key, V value, Node<K, V> next) {

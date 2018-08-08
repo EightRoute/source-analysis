@@ -1,4 +1,4 @@
-package util.locks;
+package java.util.locks;
 
 
 import sun.misc.Unsafe;
